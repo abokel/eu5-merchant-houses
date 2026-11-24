@@ -1,0 +1,103 @@
+# Merchant Houses - peace terms a corporation can demand from a host.
+
+# Restore Charter: the loser grants (or grants again) our Corporate Charter, and our
+# control over them rises by 25. Cheaper in an Enforce Charter war.
+mh_restore_charter = {
+	cost = {
+		add = {
+			desc = "DIPLOREASON_BASE"
+			value = 25
+		}
+		if = {
+			limit = {
+				exists = scope:war
+				scope:war ?= { casus_belli ?= casus_belli:mh_cb_enforce_charter }
+			}
+			add = {
+				desc = "DIPLOREASON_USED_CASUSBELLI"
+				value = -15
+			}
+		}
+	}
+
+	potential = {
+		scope:winner = { mh_is_corporation = yes }
+		scope:loser = { mh_valid_host = yes }
+	}
+	allow = {
+	}
+
+	effect = {
+		scope:loser = { save_scope_as = mh_charter_loser }
+		scope:winner = {
+			mh_restore_charter_effect = yes
+		}
+	}
+
+	ai_desire = {
+		add = {
+			desc = "BASE"
+			value = 0
+		}
+	}
+}
+
+# Demand Company Rights: the loser grants Trading Rights, Levy Rights and Tax Farming.
+# Also makes us the stakeholder there if we were not already.
+mh_demand_company_rights = {
+	cost = {
+		add = {
+			desc = "DIPLOREASON_BASE"
+			value = 20
+		}
+		if = {
+			limit = {
+				exists = scope:war
+				scope:war ?= { casus_belli ?= casus_belli:mh_cb_enforce_charter }
+			}
+			add = {
+				desc = "DIPLOREASON_USED_CASUSBELLI"
+				value = -10
+			}
+		}
+	}
+
+	potential = {
+		scope:winner = { mh_is_corporation = yes }
+		scope:loser = {
+			mh_valid_host = yes
+			NAND = {
+				has_variable = mh_right_build
+				has_variable = mh_right_levy
+				has_variable = mh_right_tax
+			}
+		}
+	}
+	allow = {
+	}
+
+	effect = {
+		scope:loser = {
+			mh_set_stakeholder_effect = { CORP = scope:winner }
+			set_variable = mh_right_build
+			set_variable = mh_right_levy
+			if = {
+				limit = { NOT = { has_variable = mh_right_tax } }
+				set_variable = mh_right_tax
+				add_country_modifier = {
+					modifier = mh_tax_farmed
+					days = -1
+					mode = replace
+				}
+			}
+			mh_change_control = { VALUE = 10 }
+		}
+	}
+
+	ai_desire = {
+		add = {
+			desc = "BASE"
+			value = 0
+		}
+	}
+}

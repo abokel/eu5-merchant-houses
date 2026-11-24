@@ -207,7 +207,17 @@
  mh_cb_enforce_charter_PROV: "Enforce Charter"
  mh_cb_enforce_charter_desc: "They revoked the charter they granted us. We will make them honor it."
  mh_enforce_charter_wargoal: "Enforce Charter"
- mh_enforce_charter_wargoal_desc: "Force the host to restore our Corporate Charter. Winning restores the charter, adds 25 control and gives board confidence +10."
+ mh_enforce_charter_wargoal_desc: "Force the host to restore our Corporate Charter. In the peace deal, demand Restore Charter (and Demand Company Rights)."
+
+ # Peace terms
+ mh_restore_charter: "Restore Charter"
+ mh_restore_charter_entry: "[TARGET_COUNTRY.GetNameWithFlag] restores our Corporate Charter"
+ mh_restore_charter_entry_short: "[TARGET_COUNTRY.GetNameWithFlagWithNoTooltip] restores our charter"
+ mh_restore_charter_desc: "They grant our Corporate Charter again. Our control over them rises by 25 and board confidence by 10. Cheaper in an Enforce Charter war."
+ mh_demand_company_rights: "Demand Company Rights"
+ mh_demand_company_rights_entry: "[TARGET_COUNTRY.GetNameWithFlag] grants us Trading Rights, Levy Rights and Tax Farming"
+ mh_demand_company_rights_entry_short: "[TARGET_COUNTRY.GetNameWithFlagWithNoTooltip] grants company rights"
+ mh_demand_company_rights_desc: "They grant us Trading Rights, Levy Rights and Tax Farming, and our control over them rises by 10. Cheaper in an Enforce Charter war."
 
  # Decisions
  mh_incorporate.title: "Incorporate the Company"
@@ -247,5 +257,5 @@
  mh_board.10.title: "The Company Grows Too Powerful"
  mh_board.10.desc: "Our ministers warn that the company we let into the country now holds too much power."
  mh_board.11.title: "Charter Revoked"
- mh_board.11.desc: "[SCOPE.sCountry('mh_revoking_host').GetName] has revoked our Corporate Charter. Our agents have been told to leave, and every right they granted us is gone. We have 10 years to make them honor it by force (Enforce Charter casus belli)."
+ mh_board.11.desc: "[SCOPE.sCountry('mh_revoking_host').GetName] has revoked our Corporate Charter. Our agents have been told to leave, and every right they granted us is gone. We have 10 years to make them honor it by force: use the Enforce Charter casus belli and demand Restore Charter in the peace deal."
  mh_board.11.a: "They will regret this."

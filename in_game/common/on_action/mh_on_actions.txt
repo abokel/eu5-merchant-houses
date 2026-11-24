@@ -24,23 +24,3 @@ mh_monthly_country_pulse = {
 	}
 }
 
-# Winning an Enforce Charter war restores the charter (root = country, scope:winner, scope:loser, scope:war)
-on_winning_war = {
-	on_actions = { mh_on_winning_war }
-}
-
-mh_on_winning_war = {
-	trigger = {
-		scope:war = {
-			casus_belli ?= casus_belli:mh_cb_enforce_charter
-			is_an_attacker = scope:winner
-		}
-		scope:winner = { mh_is_corporation = yes }
-	}
-	effect = {
-		scope:loser = { save_scope_as = mh_charter_loser }
-		scope:winner = {
-			mh_restore_charter_effect = yes
-		}
-	}
-}

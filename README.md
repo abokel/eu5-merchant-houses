@@ -38,7 +38,8 @@ Separate from, and compatible with, Colonial Mandates & Landed Trade Companies (
 - Hosts accept more readily when they owe you money, are broke, are at war (levies), share your ruling family, or are already under your control.
 - **Extend Credit**: lend a country six months of its income (at most half your treasury) for 60 months. Control +3 if you hold its stake.
 - The host can revoke the charter at any time: you lose every right and 25 control. AI hosts at 60+ control may do it on their own.
-- A host that revokes gives you the **Enforce Charter** casus belli for 10 years. Win the war and the charter comes back with +25 control and +10 board confidence.
+- A host that revokes gives you the **Enforce Charter** casus belli for 10 years.
+- Peace terms in any war you win against a landed country: **Restore Charter** (charter back, +25 control, +10 board confidence; 25 war score, 10 with Enforce Charter) and **Demand Company Rights** (Trading Rights, Levy Rights and Tax Farming, +10 control; 20 war score, 10 with Enforce Charter).
 - Petition, protectorate, absorb and land actions show your exact current control over the host in their tooltip.
 
 ### Protectorates and absorption
@@ -82,7 +83,8 @@ Separate from, and compatible with, Colonial Mandates & Landed Trade Companies (
 | `in_game/common/scripted_effects/mh_effects.txt` | Board, control, landing logic |
 | `in_game/common/scripted_triggers/mh_triggers.txt` | Shared checks |
 | `in_game/common/script_values/mh_values.txt` | Numbers shown in the Company Ledger |
-| `in_game/common/on_action/mh_on_actions.txt` | Monthly board and control updates, Enforce Charter victory |
+| `in_game/common/on_action/mh_on_actions.txt` | Monthly board and control updates |
+| `in_game/common/peace_treaties/mh_peace_treaties.txt` | Restore Charter and Demand Company Rights peace terms |
 | `in_game/common/customizable_localization/*.txt` | Vanilla overrides for Governor, Director and rank titles |
 | `main_menu/common/static_modifiers/mh_static_modifiers.txt` | Tax farming, dominance and control tier modifiers |
 | `main_menu/common/named_colors/mh_colors.txt` | Map color |
