@@ -26,21 +26,42 @@ mh_corporate_charter = {
 	receiving_color = rgb { 230 180 60 }
 	diplomatic_map_stripe = yes
 
-	# Only corporations can hold charters, and only in landed countries
+	# Only corporations can hold charters, and only in landed countries.
+	# The visibility checks see the two countries as giver and receiver rather than
+	# as requester and target, so they accept either order; request_enabled (which
+	# does use requester = scope:actor) enforces the direction.
 	visible = {
-		scope:actor = { mh_is_corporation = yes }
-		scope:recipient = { mh_valid_host = yes }
+		OR = {
+			AND = {
+				scope:actor = { mh_is_corporation = yes }
+				scope:recipient = { mh_valid_host = yes }
+			}
+			AND = {
+				scope:recipient = { mh_is_corporation = yes }
+				scope:actor = { mh_valid_host = yes }
+			}
+		}
 	}
 
 	# Hosts never hand out charters unasked; the corporation must request one
 	offer_visible = { always = no }
 
 	request_visible = {
-		scope:actor = { mh_is_corporation = yes }
-		scope:recipient = { mh_valid_host = yes }
+		OR = {
+			AND = {
+				scope:actor = { mh_is_corporation = yes }
+				scope:recipient = { mh_valid_host = yes }
+			}
+			AND = {
+				scope:recipient = { mh_is_corporation = yes }
+				scope:actor = { mh_valid_host = yes }
+			}
+		}
 	}
 
 	request_enabled = {
+		scope:actor = { mh_is_corporation = yes }
+		scope:recipient = { mh_valid_host = yes }
 		scope:recipient = {
 			# one corporation per host: another company already holds the stake
 			custom_tooltip = {
