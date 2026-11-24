@@ -36,6 +36,7 @@ Separate from, and compatible with, Colonial Mandates & Landed Trade Companies (
   - **Tax Farming**: receive 10% of their tax and trade income every month. Control +10.
   - **Land Grant**: a **Company Estate** in a location you choose, every 2 years. Control +5.
 - Hosts accept more readily when they owe you money, are broke, are at war (levies), share your ruling family, or are already under your control.
+- **Defend Our Host** (Influence): join a war on the side of a host that granted you a charter, if it leads its side. Control +5.
 - **Extend Credit**: lend a country six months of its income (at most half your treasury) for 60 months. Control +3 if you hold its stake.
 - The host can revoke the charter at any time, unless it is your subject: you lose every right and 25 control. AI hosts at 60+ control may do it on their own.
 - A host that revokes gives you the **Enforce Charter** casus belli for 10 years.
@@ -74,7 +75,7 @@ Separate from, and compatible with, Colonial Mandates & Landed Trade Companies (
 | `in_game/common/heir_selections/mh_corporation.txt` | Board Election |
 | `in_game/common/government_reforms/mh_corporation_reforms.txt` | Family Firm, Joint-Stock Board, Chartered Company, Merchant and Hanseatic Corporation |
 | `in_game/common/scripted_relations/mh_corporate_charter.txt` | The Corporate Charter relation |
-| `in_game/common/country_interactions/mh_interactions.txt` | Credit, petitions, protectorate, absorb, foreclose, claim land, Presidency |
+| `in_game/common/country_interactions/mh_interactions.txt` | Credit, petitions, protectorate, absorb, foreclose, claim land, Presidency, Defend Our Host |
 | `in_game/common/subject_types/mh_corporate_protectorate.txt` | Corporate Protectorate subject type |
 | `in_game/common/building_types/mh_company_buildings.txt` | Company Estate, Factor's House, Company Barracks, Presidency buildings |
 | `in_game/common/decisions/mh_decisions.txt` | Incorporate, Pay a Dividend, Company Ledger |

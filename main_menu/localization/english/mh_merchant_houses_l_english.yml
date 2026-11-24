@@ -192,6 +192,11 @@
 
  mh_must_be_landed_tt: "We own land of our own (a landless company cannot rule a protectorate)"
  mh_current_control_tt: "Our control over [SCOPE.sCountry('recipient').GetName] is now [SCOPE.sCountry('recipient').MakeScope.ScriptValue('mh_control_value')|V0] of 100"
+ mh_join_host_war: "Defend Our Host"
+ mh_join_host_war_act: "Join the war of [SCOPE.sCountry('recipient').GetName]"
+ mh_join_host_war_desc: "Join one of the wars of a country that granted us a Corporate Charter, on its side. It must lead that side of the war. Our control over them rises by 5."
+ PROPOSE_mh_join_host_war: "Join the war of $RECIPIENT$?\n$INFO$."
+ mh_join_host_war_tt: "Our control over them +5"
  mh_no_locations: "@trigger_no! No locations available"
  mh_board_needs_25_tt: "Board confidence is at least 25"
  mh_board_needs_30_tt: "Board confidence is at least 30"

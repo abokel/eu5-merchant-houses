@@ -966,3 +966,119 @@ mh_found_presidency = {
 		add = 20
 	}
 }
+
+#######################################################
+# Defend Our Host: join a war on the side of a country that granted us a charter
+#######################################################
+mh_join_host_war = {
+	type = diplomacy
+	category = CATEGORY_INFLUENCE_ACTIONS
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = {
+			is_during_bankruptcy = no
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_influence
+		}
+		visible = {
+			at_war = yes
+			giving_scripted_relation = {
+				type = relation_type:mh_corporate_charter
+				target = scope:actor
+			}
+		}
+		enabled = {
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = war
+		source = recipient
+		target_flag = target
+		interaction_source_list = {
+			scope:recipient = {
+				every_current_war = {
+					add_to_list = source
+				}
+			}
+		}
+		cache_interaction_source_list = yes
+		name = "choose_war_to_join"
+		column = {
+			data = name
+		}
+		visible = {
+		}
+		enabled = {
+			trigger_if = {
+				limit = {
+					attacker_leader = scope:recipient
+				}
+				can_join_as_attacker = scope:actor
+				scope:actor = {
+					NOT = { has_truce_with = root.defender_leader }
+				}
+			}
+			trigger_else_if = {
+				limit = {
+					defender_leader = scope:recipient
+				}
+				can_join_as_defender = scope:actor
+				scope:actor = {
+					NOT = { has_truce_with = root.attacker_leader }
+				}
+			}
+			trigger_else = {
+				always = no
+			}
+		}
+	}
+
+	effect = {
+		custom_tooltip = mh_current_control_tt
+		if = {
+			limit = { exists = scope:target }
+			scope:target = {
+				if = {
+					limit = {
+						attacker_leader = scope:recipient
+					}
+					scope:actor = {
+						join_war_as_attacker = {
+							war = prev
+							reason = intervene
+						}
+					}
+				}
+				else = {
+					scope:actor = {
+						join_war_as_defender = {
+							war = prev
+							reason = intervene
+						}
+					}
+				}
+			}
+			scope:recipient = {
+				mh_change_control = { VALUE = 5 }
+			}
+			custom_tooltip = mh_join_host_war_tt
+		}
+	}
+
+	ai_will_do = {
+		add = -1000
+	}
+}
