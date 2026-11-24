@@ -62,12 +62,15 @@ mh_corporate_charter = {
 		}
 	}
 
+	# The host revokes the charter: the company loses its rights and gets a casus belli
 	cancel_effect = {
 		scope:actor = {
 			mh_charter_lost_effect = { CORP = scope:recipient }
+			mh_grant_enforce_charter_cb = { HOST = scope:recipient }
 		}
 		scope:recipient = {
 			mh_charter_lost_effect = { CORP = scope:actor }
+			mh_grant_enforce_charter_cb = { HOST = scope:actor }
 		}
 	}
 

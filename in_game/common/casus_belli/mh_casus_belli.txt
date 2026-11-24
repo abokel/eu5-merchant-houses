@@ -1,0 +1,21 @@
+# Merchant Houses - Enforce Charter.
+# Granted only by script, to a corporation whose host revoked its charter.
+# Winning the war restores the charter and adds 25 control (see mh_on_winning_war).
+mh_cb_enforce_charter = {
+	years = 10
+	create_visible = {
+		always = no
+	}
+	create_enabled = {
+		always = no
+	}
+
+	war_goal_type = mh_enforce_charter_wargoal
+
+	ai_will_do = {
+		add = {
+			desc = "BASE"
+			value = 25
+		}
+	}
+}

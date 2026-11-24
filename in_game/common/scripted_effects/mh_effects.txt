@@ -1,7 +1,7 @@
 # Merchant Houses - scripted effects
 #
 # Variables used:
-#  On a corporation:  mh_board_confidence (0-100), mh_last_gold, mh_no_confidence_cooldown,
+#  On a corporation:  mh_board_confidence (0-100), mh_profit_streak (-3 to 3), mh_no_confidence_cooldown,
 #                     mh_is_chartered_company, mh_was_merchant_republic, mh_was_hansa
 #  On a host country: mh_stake_holder (the corporation), mh_control (0-100),
 #                     mh_right_build, mh_right_levy, mh_right_tax, mh_land_grant_cooldown,
@@ -39,7 +39,7 @@ mh_incorporate_effect = {
 		}
 		add_reform = government_reform:mh_family_firm
 		set_variable = { name = mh_board_confidence value = 60 }
-		set_variable = { name = mh_last_gold value = gold }
+		set_variable = { name = mh_profit_streak value = 0 }
 		ruler_or_regent ?= {
 			if = {
 				limit = { has_dynasty = no }
@@ -70,20 +70,50 @@ mh_monthly_corporation_effect = {
 		set_variable = { name = mh_board_confidence value = 50 }
 	}
 	if = {
-		limit = { NOT = { has_variable = mh_last_gold } }
-		set_variable = { name = mh_last_gold value = gold }
+		limit = { NOT = { has_variable = mh_profit_streak } }
+		set_variable = { name = mh_profit_streak value = 0 }
 	}
 
-	# Profits please the board, losses worry it
+	# The board judges the company's monthly balance (income minus expenses), not the
+	# treasury, so buying a building or repaying a loan does not count as a loss.
+	# A streak from -3 to +3 smooths out single good or bad months.
 	if = {
-		limit = { gold > var:mh_last_gold }
-		mh_change_board_confidence = { VALUE = 1 }
+		limit = { monthly_balance > 0 }
+		change_variable = { name = mh_profit_streak add = 1 }
 	}
 	else_if = {
-		limit = { gold < var:mh_last_gold }
+		limit = { monthly_balance < 0 }
+		change_variable = { name = mh_profit_streak add = -1 }
+	}
+	else_if = {
+		limit = { var:mh_profit_streak > 0 }
+		change_variable = { name = mh_profit_streak add = -1 }
+	}
+	else_if = {
+		limit = { var:mh_profit_streak < 0 }
+		change_variable = { name = mh_profit_streak add = 1 }
+	}
+	clamp_variable = { name = mh_profit_streak max = 3 min = -3 }
+
+	# Two or more profitable months in a row please the board, two or more losing months worry it
+	if = {
+		limit = { var:mh_profit_streak >= 2 }
+		mh_change_board_confidence = { VALUE = 1 }
+		# A healthy margin (a fifth of income or more) pleases them a little more
+		if = {
+			limit = {
+				monthly_balance >= {
+					value = monthly_income_total
+					multiply = 0.2
+				}
+			}
+			mh_change_board_confidence = { VALUE = 0.5 }
+		}
+	}
+	else_if = {
+		limit = { var:mh_profit_streak <= -2 }
 		mh_change_board_confidence = { VALUE = -1 }
 	}
-	set_variable = { name = mh_last_gold value = gold }
 
 	# War and bankruptcy are bad for business
 	if = {
@@ -165,6 +195,47 @@ mh_charter_lost_effect = {
 		mh_change_control = { VALUE = -25 }
 		mh_remove_rights_effect = yes
 	}
+}
+
+# Run on both countries when a host revokes a charter. On the side that is the
+# corporation, grants the Enforce Charter casus belli against $HOST$.
+mh_grant_enforce_charter_cb = {
+	if = {
+		limit = {
+			mh_is_corporation = yes
+			NOT = { this = $HOST$ }
+		}
+		add_casus_belli = {
+			target = $HOST$
+			type = casus_belli:mh_cb_enforce_charter
+		}
+	}
+}
+
+# Corporation scope, after winning an Enforce Charter war against scope:mh_charter_loser.
+# The charter comes back and control over the loser rises by 25.
+mh_restore_charter_effect = {
+	save_temporary_scope_as = mh_charter_winner
+	scope:mh_charter_loser = {
+		if = {
+			limit = {
+				NOT = {
+					giving_scripted_relation = {
+						type = relation_type:mh_corporate_charter
+						target = scope:mh_charter_winner
+					}
+				}
+			}
+			create_relation = {
+				first = scope:mh_charter_loser
+				second = scope:mh_charter_winner
+				type = relation_type:mh_corporate_charter
+			}
+		}
+		mh_set_stakeholder_effect = { CORP = scope:mh_charter_winner }
+		mh_change_control = { VALUE = 25 }
+	}
+	mh_change_board_confidence = { VALUE = 10 }
 }
 
 # Host scope. Removes every right granted to the stakeholder.

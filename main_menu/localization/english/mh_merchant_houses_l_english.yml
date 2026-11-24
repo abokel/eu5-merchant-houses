@@ -83,7 +83,7 @@
  offer_mh_corporate_charter_desc: "Let their company operate inside our borders."
  cancel_mh_corporate_charter: "Revoke Corporate Charter"
  cancel_mh_corporate_charter_CATEGORY: "CATEGORY_ECONOMY_ACTIONS"
- cancel_mh_corporate_charter_desc: "Throw the company out. They lose every right we granted them and a large part of their control over us."
+ cancel_mh_corporate_charter_desc: "Throw the company out. They lose every right we granted them and a large part of their control over us, and they gain a casus belli to force us to restore the charter."
  break_mh_corporate_charter: "Give Up Corporate Charter"
  break_mh_corporate_charter_CATEGORY: "CATEGORY_ECONOMY_ACTIONS"
  break_mh_corporate_charter_desc: "Give up our charter in their country. We lose every right they granted us and a large part of our control over them."
@@ -189,6 +189,7 @@
  mh_select_presidency: "Choose the location for the Presidency"
 
  mh_must_be_landed_tt: "We own land of our own (a landless company cannot rule a protectorate)"
+ mh_current_control_tt: "Our control over [SCOPE.sCountry('recipient').GetName] is now [SCOPE.sCountry('recipient').MakeScope.ScriptValue('mh_control_value')|V0] of 100"
  mh_no_locations: "@trigger_no! No locations available"
  mh_board_needs_25_tt: "Board confidence is at least 25"
  mh_board_needs_30_tt: "Board confidence is at least 30"
@@ -200,6 +201,13 @@
 
  mh_extend_credit_effect_text: "[SCOPE.sCountry('actor').GetName] lend money to [SCOPE.sCountry('recipient').GetName]"
  mh_extend_credit_effect_text_past: "[SCOPE.sCountry('actor').GetName] lent money to [SCOPE.sCountry('recipient').GetName]"
+
+ # Casus belli
+ mh_cb_enforce_charter: "Enforce Charter"
+ mh_cb_enforce_charter_PROV: "Enforce Charter"
+ mh_cb_enforce_charter_desc: "They revoked the charter they granted us. We will make them honor it."
+ mh_enforce_charter_wargoal: "Enforce Charter"
+ mh_enforce_charter_wargoal_desc: "Force the host to restore our Corporate Charter. Winning restores the charter, adds 25 control and gives board confidence +10."
 
  # Decisions
  mh_incorporate.title: "Incorporate the Company"
@@ -239,5 +247,5 @@
  mh_board.10.title: "The Company Grows Too Powerful"
  mh_board.10.desc: "Our ministers warn that the company we let into the country now holds too much power."
  mh_board.11.title: "Charter Revoked"
- mh_board.11.desc: "[SCOPE.sCountry('mh_revoking_host').GetName] has revoked our Corporate Charter. Our agents have been told to leave, and every right they granted us is gone."
+ mh_board.11.desc: "[SCOPE.sCountry('mh_revoking_host').GetName] has revoked our Corporate Charter. Our agents have been told to leave, and every right they granted us is gone. We have 10 years to make them honor it by force (Enforce Charter casus belli)."
  mh_board.11.a: "They will regret this."

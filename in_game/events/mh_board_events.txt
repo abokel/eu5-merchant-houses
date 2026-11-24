@@ -121,6 +121,7 @@ mh_board.10 = {
 				}
 				mh_charter_lost_effect = { CORP = scope:mh_corp }
 				scope:mh_corp = {
+					mh_grant_enforce_charter_cb = { HOST = scope:mh_revoking_host }
 					trigger_event_non_silently = { id = mh_board.11 }
 				}
 			}

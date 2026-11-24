@@ -145,6 +145,7 @@ mh_petition_trading_rights = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		scope:recipient = {
 			set_variable = mh_right_build
 			mh_change_control = { VALUE = 5 }
@@ -233,6 +234,7 @@ mh_petition_levy_rights = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		scope:recipient = {
 			set_variable = mh_right_levy
 			mh_change_control = { VALUE = 5 }
@@ -321,6 +323,7 @@ mh_petition_tax_farming = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		scope:recipient = {
 			set_variable = mh_right_tax
 			add_country_modifier = {
@@ -443,6 +446,7 @@ mh_petition_land_grant = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		if = {
 			limit = { exists = scope:target }
 			custom_tooltip = mh_petition_land_grant_tt
@@ -523,6 +527,7 @@ mh_declare_protectorate = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		scope:recipient = {
 			make_subject_of = {
 				target = scope:actor
@@ -598,6 +603,7 @@ mh_absorb_host = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		custom_tooltip = mh_absorb_host_tt
 		hidden_effect = {
 			scope:recipient = { mh_prepare_absorption_effect = yes }
@@ -724,6 +730,7 @@ mh_foreclose_land = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		if = {
 			limit = { exists = scope:target }
 			custom_tooltip = mh_foreclose_land_tt
@@ -826,6 +833,7 @@ mh_claim_company_land = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		if = {
 			limit = { exists = scope:target }
 			custom_tooltip = mh_claim_company_land_tt
@@ -928,6 +936,7 @@ mh_found_presidency = {
 	}
 
 	effect = {
+		custom_tooltip = mh_current_control_tt
 		if = {
 			limit = { exists = scope:target }
 			custom_tooltip = mh_found_presidency_tt
