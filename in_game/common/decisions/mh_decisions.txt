@@ -1,0 +1,105 @@
+# Merchant Houses - decisions
+
+# Incorporate: a bank, the Hansa or a merchant republic becomes a Corporation
+mh_incorporate = {
+	decision_category = economy_decisions
+	image = "gfx/interface/illustrations/institutions/banking.dds"
+
+	potential = {
+		mh_can_incorporate = yes
+		is_ai = no
+	}
+
+	allow = {
+		at_war = no
+		gold >= 100
+	}
+
+	# The AI never incorporates: corporations are a player path
+	ai_will_do = {
+		value = 0
+	}
+
+	option = {
+		name = mh_incorporate.a
+		ai_chance = { value = 100 }
+		effect = {
+			add_gold = -100
+			mh_incorporate_effect = yes
+		}
+	}
+}
+
+# Pay a Dividend: buy back the board's confidence with gold
+mh_pay_dividend = {
+	decision_category = economy_decisions
+	image = "gfx/interface/illustrations/institutions/banking.dds"
+
+	potential = {
+		mh_is_corporation = yes
+	}
+
+	allow = {
+		custom_tooltip = {
+			text = mh_dividend_cooldown_tt
+			NOT = { has_variable = mh_dividend_cooldown }
+		}
+		gold >= {
+			value = monthly_income_total
+			multiply = 6
+			min = 50
+		}
+	}
+
+	ai_will_do = {
+		value = 0
+		if = {
+			limit = {
+				has_variable = mh_board_confidence
+				var:mh_board_confidence < 30
+			}
+			add = 100
+		}
+	}
+
+	option = {
+		name = mh_pay_dividend.a
+		ai_chance = { value = 100 }
+		effect = {
+			add_gold = {
+				value = monthly_income_total
+				multiply = -6
+				max = -50
+			}
+			mh_change_board_confidence = { VALUE = 20 }
+			set_variable = { name = mh_dividend_cooldown value = yes years = 2 }
+		}
+	}
+}
+
+# Company Ledger: shows board confidence and the company's stakes abroad
+mh_company_ledger = {
+	decision_category = economy_decisions
+	image = "gfx/interface/illustrations/institutions/banking.dds"
+
+	potential = {
+		mh_is_corporation = yes
+		is_ai = no
+	}
+
+	allow = {
+		always = yes
+	}
+
+	ai_will_do = {
+		value = 0
+	}
+
+	option = {
+		name = mh_company_ledger.a
+		ai_chance = { value = 0 }
+		effect = {
+			custom_tooltip = mh_company_ledger_tt
+		}
+	}
+}

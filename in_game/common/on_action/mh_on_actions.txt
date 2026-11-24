@@ -1,0 +1,25 @@
+# Merchant Houses on_actions (EU5 merges these with the vanilla ones of the same name)
+
+# Every month, for every country (root = country)
+monthly_country_pulse = {
+	on_actions = { mh_monthly_country_pulse }
+}
+
+mh_monthly_country_pulse = {
+	trigger = {
+		OR = {
+			government_type = government_type:corporation
+			has_variable = mh_stake_holder
+		}
+	}
+	effect = {
+		if = {
+			limit = { mh_is_corporation = yes }
+			mh_monthly_corporation_effect = yes
+		}
+		if = {
+			limit = { has_variable = mh_stake_holder }
+			mh_monthly_host_effect = yes
+		}
+	}
+}

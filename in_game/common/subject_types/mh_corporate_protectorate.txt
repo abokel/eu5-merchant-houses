@@ -1,0 +1,78 @@
+# Merchant Houses - Corporate Protectorate.
+# A host country so dominated by a corporation that the company runs its foreign
+# policy. Created only by the "Declare Corporate Protectorate" interaction.
+
+mh_corporate_protectorate = {
+	subject_pays = subject_pays_vassal
+	color = subject_vassal
+	level = 2
+	annullment_favours_required = 20
+
+	# Script only: never offered through diplomacy or peace deals
+	visible = {
+		always = no
+	}
+	creation_visible = {
+		always = no
+	}
+	visible_through_treaty = {
+		always = no
+	}
+
+	join_offensive_wars_always = {
+		NOT = { scope:actor ?= { is_subject_of = scope:recipient } }
+	}
+	join_offensive_wars_can_call = {
+		scope:actor ?= { is_subject_of = scope:recipient }
+	}
+	join_defensive_wars_always = {
+		always = yes
+	}
+
+	diplomatic_capacity_cost_scale = 0.5
+	maritime_path_tolerance = 0.5
+	strength_vs_overlord = -0.3
+
+	has_overlords_ruler = no
+	will_join_independence_wars = yes
+	can_be_annexed = yes
+	annexation_speed = 1.5
+	annexation_min_years_before = 5
+	annexation_min_opinion = 100
+	annexation_stall_opinion = 75
+	overlord_can_cancel = yes
+	subject_can_cancel = no
+
+	can_overlord_build_roads = yes
+	can_overlord_build_buildings = yes
+	can_overlord_build_rgos = yes
+	can_overlord_recruit_regiments = yes
+
+	has_limited_diplomacy = yes
+
+	fleet_basing_rights = yes
+	food_access = yes
+	subject_exempt_from_overlord_import_tariffs = yes
+	overlord_exempt_from_subject_import_tariffs = yes
+
+	can_change_rank = no
+	can_change_heir_selection = yes
+
+	minimum_opinion_for_offer = 150
+
+	great_power_score_transfer = 0.5
+	merchants_to_overlord_fraction = 0.5
+
+	institution_spread_to_overlord = monthly_institution_spread_mild
+	institution_spread_to_subject = monthly_institution_spread_mild
+
+	overlord_modifier = {
+		global_merchant_capacity_modifier = 0.05
+		trade_income = 0.05
+	}
+
+	subject_modifier = {
+		country_cabinet_efficiency = -0.15
+		loyalty_to_overlord = 10
+	}
+}

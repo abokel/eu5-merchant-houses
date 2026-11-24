@@ -1,0 +1,108 @@
+# Merchant Houses - government reforms for Corporations.
+
+#######################################################
+# Board style: pick one
+#######################################################
+
+# The founding family runs the company. Family members get a big bonus in board
+# elections, and family ties with foreign rulers count for more.
+mh_family_firm = {
+	government = corporation
+	potential = {
+		government_type = government_type:corporation
+	}
+	allow = {
+		NOT = { has_reform = government_reform:mh_joint_stock_board }
+	}
+	country_modifier = {
+		diplomatic_reputation = 1
+		monthly_republican_tradition = 0.02
+	}
+	years = 1
+}
+
+# Professional directors and outside shareholders. Better administration and a
+# steadier board, but no family bonus in elections or abroad.
+mh_joint_stock_board = {
+	government = corporation
+	potential = {
+		government_type = government_type:corporation
+	}
+	allow = {
+		NOT = { has_reform = government_reform:mh_family_firm }
+	}
+	country_modifier = {
+		country_cabinet_efficiency = 0.10
+		monthly_loan_capacity_investment = 5.0
+		bank_interest = -0.005
+	}
+	years = 1
+}
+
+#######################################################
+# Chartered Company (India / East Indies). Added by script when a corporation
+# founds its first Presidency in South or Southeast Asia.
+#######################################################
+mh_chartered_company = {
+	government = corporation
+	potential = {
+		government_type = government_type:corporation
+		has_variable = mh_is_chartered_company
+	}
+	locked = {
+		has_variable = mh_is_chartered_company
+	}
+	country_modifier = {
+		global_merchant_power = 0.15
+		global_merchant_capacity_modifier = 0.10
+		# sepoy-style armies raised from the local population
+		wrong_culture_levy_size = 0.5
+		global_levy_size_modifier = 0.15
+		global_garrison_size_modifier = 0.25
+	}
+	years = 1
+}
+
+#######################################################
+# Kept privileges for countries that incorporated from a republic.
+# Vanilla merchant republic and Hanseatic reforms only work for republics,
+# so incorporating swaps them for these.
+#######################################################
+mh_merchant_corporation = {
+	major = yes
+	government = corporation
+	potential = {
+		government_type = government_type:corporation
+		has_variable = mh_was_merchant_republic
+	}
+	locked = {
+		has_variable = mh_was_merchant_republic
+	}
+	country_modifier = {
+		global_merchant_capacity_modifier = 0.40
+		trade_income = 0.15
+		global_foreign_build_buildings_efficiency = 1.0
+		merchant_maintenance_efficiency = 0.50
+		max_trade_subventions = 0.15
+	}
+	years = 1
+}
+
+mh_hanseatic_corporation = {
+	major = yes
+	government = corporation
+	potential = {
+		government_type = government_type:corporation
+		has_variable = mh_was_hansa
+	}
+	locked = {
+		has_variable = mh_was_hansa
+	}
+	country_modifier = {
+		cannot_be_subjugated = yes
+		merchant_maintenance_efficiency = 0.50
+		allows_hanseatic_federation_buildings = yes
+		court_language_is_market_language_importance_modifier = 15
+	}
+	years = 1
+}

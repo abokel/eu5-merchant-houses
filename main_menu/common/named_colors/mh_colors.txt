@@ -1,0 +1,4 @@
+colors = {
+	# Merchant Houses: map color for the Corporation government type
+	gov_corporation = rgb { 205 155 45 }
+}

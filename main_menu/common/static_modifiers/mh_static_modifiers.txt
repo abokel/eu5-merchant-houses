@@ -1,0 +1,50 @@
+# Merchant Houses - static modifiers
+
+# On a host that granted a corporation Tax Farming rights: the company collects part of the revenue
+mh_tax_farmed = {
+	game_data = {
+		category = country
+	}
+	tax_income_efficiency = -0.10
+}
+
+# On a host whose corporate control is 50 or more: resentment of foreign merchants
+mh_corporate_dominance = {
+	game_data = {
+		category = country
+	}
+	monthly_rebel_growth = 0.005
+	global_separatism = 0.02
+	monthly_legitimacy = -0.05
+	global_burghers_estate_power = 0.10
+}
+
+# Control tiers on a host, so everyone can see how far a company's grip reaches.
+# Exactly one of these is on a host with a corporate stakeholder.
+mh_stake_concession = {
+	game_data = {
+		category = country
+	}
+	global_burghers_estate_power = 0.02
+}
+
+mh_stake_influence = {
+	game_data = {
+		category = country
+	}
+	global_burghers_estate_power = 0.04
+}
+
+mh_stake_grip = {
+	game_data = {
+		category = country
+	}
+	global_burghers_estate_power = 0.06
+}
+
+mh_stake_dominion = {
+	game_data = {
+		category = country
+	}
+	global_burghers_estate_power = 0.08
+}

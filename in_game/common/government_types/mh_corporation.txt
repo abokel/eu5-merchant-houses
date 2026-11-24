@@ -1,0 +1,21 @@
+# Merchant Houses - the Corporation government type.
+# Ruled by a Governor, elected for life by a board of Directors (the cabinet).
+# Uses republican tradition as its government power.
+
+corporation = {
+	map_color = gov_corporation
+
+	government_power = republican_tradition
+
+	default_character_estate = burghers_estate
+
+	heir_selection = mh_board_election
+
+	modifier = {
+		court_language_is_market_language_importance_modifier = 15
+		global_merchant_capacity_modifier = 0.10
+		trade_income = 0.10
+		monthly_loan_capacity_investment = 5.0
+		diplomatic_reputation = 1
+	}
+}

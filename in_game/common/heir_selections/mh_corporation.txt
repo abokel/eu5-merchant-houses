@@ -1,0 +1,75 @@
+# Merchant Houses - how a Corporation picks its Governor.
+# The board elects a Governor for life from three candidates in the company.
+# Under the Family Firm reform, members of the ruling family get a large bonus.
+
+mh_board_election = {
+	use_election = yes
+	term_duration = 0	# 0 = until the Governor dies or is voted out by the board
+	max_possible_candidates = 3
+
+	allowed_estates = { nobles_estate burghers_estate }
+
+	potential = {
+		government_type = government_type:corporation
+	}
+
+	locked = {
+		government_type = government_type:corporation
+	}
+
+	heir_is_allowed = {
+	}
+
+	calc = {
+		if = {
+			limit = { exists = root }
+			add = {
+				desc = "HEIR_SELECTION_ADM_DESC"
+				value = root.adm
+				multiply = 2
+			}
+			add = {
+				desc = "HEIR_SELECTION_DIP_DESC"
+				value = root.dip
+			}
+			if = {
+				limit = {
+					scope:target = { has_reform = government_reform:mh_family_firm }
+					has_dynasty = yes
+					scope:target.ruler_or_regent ?= {
+						has_dynasty = yes
+						dynasty = prev.dynasty
+					}
+				}
+				add = {
+					desc = "MH_HEIR_SELECTION_FAMILY_FIRM_DESC"
+					value = 60
+				}
+			}
+			if = {
+				limit = { modifier:blocked_from_being_ruler = yes }
+				add = {
+					desc = "HEIR_SELECTION_IS_UNSUITED_TO_RULE_DESC"
+					value = -1000
+				}
+			}
+		}
+
+		# General tooltip
+		if = {
+			limit = { NOT = { exists = root } }
+			add = {
+				desc = "HEIR_SELECTION_ADM_DESC"
+				value = 2
+			}
+			add = {
+				desc = "HEIR_SELECTION_DIP_DESC"
+				value = 1
+			}
+			add = {
+				desc = "MH_HEIR_SELECTION_FAMILY_FIRM_DESC"
+				value = 1
+			}
+		}
+	}
+}

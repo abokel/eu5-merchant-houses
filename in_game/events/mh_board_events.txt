@@ -1,0 +1,148 @@
+namespace = mh_board
+
+#################################
+# Vote of No Confidence
+# Fires when board confidence falls below 15 (at most once every 5 years).
+#################################
+mh_board.1 = {
+	type = country_event
+	title = mh_board.1.title
+	desc = mh_board.1.desc
+	outcome = negative
+
+	image = "gfx/interface/illustrations/institutions/banking.dds"
+
+	trigger = {
+		mh_is_corporation = yes
+		has_ruler = yes
+	}
+
+	immediate = {
+		ruler ?= { save_scope_as = mh_old_governor }
+		ordered_cabinet_character = {
+			limit = {
+				is_ruler = no
+				is_adult = yes
+			}
+			order_by = adm
+			max = 1
+			check_range_bounds = no
+			save_scope_as = mh_new_governor
+		}
+		if = {
+			limit = { NOT = { exists = scope:mh_new_governor } }
+			ordered_character = {
+				limit = {
+					is_ruler = no
+					is_adult = yes
+				}
+				order_by = adm
+				max = 1
+				check_range_bounds = no
+				save_scope_as = mh_new_governor
+			}
+		}
+	}
+
+	# The board replaces the Governor with its ablest Director
+	option = {
+		name = mh_board.1.a
+		trigger = { exists = scope:mh_new_governor }
+		mh_board_replaces_governor_effect = yes
+		ai_chance = { factor = 60 }
+	}
+
+	# Buy off the directors with a special dividend
+	option = {
+		name = mh_board.1.b
+		trigger = {
+			gold >= {
+				value = monthly_income_total
+				multiply = 12
+				min = 100
+			}
+		}
+		add_gold = {
+			value = monthly_income_total
+			multiply = -12
+			max = -100
+		}
+		mh_change_board_confidence = { VALUE = 25 }
+		ai_chance = { factor = 30 }
+	}
+
+	# The founding family closes ranks around its Governor
+	option = {
+		name = mh_board.1.c
+		trigger = { has_reform = government_reform:mh_family_firm }
+		add_prestige = prestige_mild_penalty
+		mh_change_board_confidence = { VALUE = 15 }
+		ai_chance = { factor = 10 }
+	}
+
+	# Fallback when there is no one to replace the Governor and no money
+	option = {
+		name = mh_board.1.d
+		trigger = {
+			NOT = { exists = scope:mh_new_governor }
+		}
+		mh_change_board_confidence = { VALUE = 10 }
+		add_prestige = prestige_mild_penalty
+		ai_chance = { factor = 1 }
+	}
+}
+
+#################################
+# The Company Grows Too Powerful (AI hosts only)
+# An AI host with 60+ corporate control may revoke the charter.
+#################################
+mh_board.10 = {
+	type = country_event
+	title = mh_board.10.title
+	desc = mh_board.10.desc
+	outcome = neutral
+	hidden = yes
+
+	trigger = {
+		is_ai = yes
+		has_variable = mh_stake_holder
+	}
+
+	immediate = {
+		save_scope_as = mh_revoking_host
+		var:mh_stake_holder = { save_scope_as = mh_corp }
+		random_list = {
+			# Revoke the charter
+			50 = {
+				remove_relation = {
+					type = relation_type:mh_corporate_charter
+					first = root
+					second = scope:mh_corp
+				}
+				mh_charter_lost_effect = { CORP = scope:mh_corp }
+				scope:mh_corp = {
+					trigger_event_non_silently = { id = mh_board.11 }
+				}
+			}
+			# Tolerate the company for now
+			50 = {}
+		}
+	}
+}
+
+#################################
+# Notification: a host revoked our charter
+#################################
+mh_board.11 = {
+	type = country_event
+	title = mh_board.11.title
+	desc = mh_board.11.desc
+	outcome = negative
+
+	image = "gfx/interface/illustrations/institutions/banking.dds"
+
+	option = {
+		name = mh_board.11.a
+		mh_change_board_confidence = { VALUE = -10 }
+	}
+}

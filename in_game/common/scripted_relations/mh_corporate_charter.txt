@@ -1,0 +1,173 @@
+# Merchant Houses - the Corporate Charter.
+# A host country grants a corporation the right to operate inside its borders.
+# The corporation (actor) requests it; the host (recipient) gives it.
+# While it lasts, the corporation's Control over the host grows every month,
+# and the corporation can petition the host for more rights.
+
+mh_corporate_charter = {
+	type = diplomacy
+	relation_type = oneway
+	break_on_war = yes
+	block_when_at_war = yes
+	annulled_by_peace_treaty = yes
+	annullment_favours_required = 20
+	dangerous_relation = yes
+
+	category = {
+		offer = CATEGORY_ECONOMY_ACTIONS
+		request = CATEGORY_ECONOMY_ACTIONS
+		cancellation = CATEGORY_ECONOMY_ACTIONS
+		break = CATEGORY_ECONOMY_ACTIONS
+	}
+
+	relation_type_for_ai = friendly
+
+	giving_color = rgb { 200 150 40 }
+	receiving_color = rgb { 230 180 60 }
+	diplomatic_map_stripe = yes
+
+	# Only corporations can hold charters, and only in landed countries
+	visible = {
+		scope:actor = { mh_is_corporation = yes }
+		scope:recipient = { mh_valid_host = yes }
+	}
+
+	# Hosts never hand out charters unasked; the corporation must request one
+	offer_visible = { always = no }
+
+	request_visible = {
+		scope:actor = { mh_is_corporation = yes }
+		scope:recipient = { mh_valid_host = yes }
+	}
+
+	request_enabled = {
+		scope:recipient = {
+			# one corporation per host: another company already holds the stake
+			custom_tooltip = {
+				text = mh_host_has_other_stakeholder_tt
+				OR = {
+					NOT = { has_variable = mh_stake_holder }
+					var:mh_stake_holder = scope:actor
+				}
+			}
+		}
+	}
+
+	# The host may revoke the charter at any time (that is a cancel on their side)
+	cancel_visible = { always = yes }
+
+	request_effect = {
+		scope:recipient = {
+			mh_set_stakeholder_effect = { CORP = scope:actor }
+		}
+	}
+
+	cancel_effect = {
+		scope:actor = {
+			mh_charter_lost_effect = { CORP = scope:recipient }
+		}
+		scope:recipient = {
+			mh_charter_lost_effect = { CORP = scope:actor }
+		}
+	}
+
+	break_effect = {
+		scope:actor = {
+			mh_charter_lost_effect = { CORP = scope:recipient }
+		}
+		scope:recipient = {
+			mh_charter_lost_effect = { CORP = scope:actor }
+		}
+	}
+
+	# AI host: how willing it is to grant the charter
+	wants_to_give = {
+		add = {
+			desc = "DIPLOREASON_BASE_RELUCTANCE"
+			value = -20
+		}
+		add = {
+			desc = "THEIR_OPINION_TOOLTIP"
+			value = "scope:recipient.opinion(scope:actor)"
+			divide = 5
+		}
+		add = {
+			desc = "THEIR_TRUST_TOOLTIP"
+			value = "scope:recipient.trust(scope:actor)"
+			divide = 5
+		}
+		add = {
+			desc = "DIPLOREASON_DIPLOMATIC_REPUTATION"
+			scope:actor = {
+				value = modifier:diplomatic_reputation
+				multiply = 5
+			}
+		}
+		if = {
+			limit = {
+				scope:recipient = {
+					any_loan = { owner ?= scope:actor }
+				}
+			}
+			add = {
+				desc = "MH_DIPLOREASON_IN_DEBT_TO_THEM"
+				value = 30
+			}
+		}
+		if = {
+			limit = { mh_family_ties = yes }
+			add = {
+				desc = "MH_DIPLOREASON_FAMILY_TIES"
+				value = 25
+			}
+		}
+		if = {
+			limit = {
+				scope:recipient = { gold < 0 }
+			}
+			add = {
+				desc = "MH_DIPLOREASON_NEEDS_MONEY"
+				value = 20
+			}
+		}
+		if = {
+			limit = {
+				scope:recipient = { is_rival_of = scope:actor }
+			}
+			subtract = {
+				desc = "game_concept_rival"
+				value = 100
+			}
+		}
+	}
+
+	# AI host: wants to revoke once the company gets too strong.
+	# Checked from both sides, since the host may be either scope here.
+	wants_to_keep = {
+		add = 20
+		if = {
+			limit = {
+				OR = {
+					scope:recipient = {
+						has_variable = mh_control
+						var:mh_control >= 60
+					}
+					scope:actor = {
+						has_variable = mh_control
+						var:mh_control >= 60
+					}
+				}
+			}
+			add = -30
+		}
+		if = {
+			limit = {
+				OR = {
+					scope:recipient = { any_loan = { owner ?= scope:actor } }
+					scope:actor = { any_loan = { owner ?= scope:recipient } }
+				}
+			}
+			add = 15
+		}
+	}
+}

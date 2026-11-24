@@ -1,0 +1,959 @@
+# Merchant Houses - corporation interactions.
+# scope:actor is always the corporation, scope:recipient the host country.
+
+#######################################################
+# Extend Credit: lend money to another country
+#######################################################
+mh_extend_credit = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = { gold >= 50 }
+	}
+
+	diplo_chance = {
+		base = 15
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_loan
+		}
+		visible = {
+			mh_valid_host = yes
+			within_diplomatic_range = scope:actor
+		}
+	}
+
+	effect = {
+		scope:actor = {
+			give_loan = {
+				target = scope:recipient
+				amount = {
+					value = scope:recipient.monthly_income_trade_and_tax
+					multiply = 6
+					max = {
+						value = scope:actor.gold
+						multiply = 0.5
+					}
+				}
+				interest = scope:recipient.modifier:bank_interest
+				months = 60
+			}
+		}
+		if = {
+			limit = { mh_actor_is_stakeholder = yes }
+			scope:recipient = { mh_change_control = { VALUE = 3 } }
+		}
+	}
+
+	ai_will_do = {
+		add = -10
+		if = {
+			limit = {
+				scope:actor = { gold > 500 }
+				mh_actor_is_stakeholder = yes
+			}
+			add = 30
+		}
+	}
+}
+
+#######################################################
+# Petitions: ask a host that granted us a charter for more rights
+#######################################################
+
+mh_petition_trading_rights = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		custom_tooltip = {
+			text = mh_board_needs_25_tt
+			mh_actor_board_at_least = { VALUE = 25 }
+		}
+	}
+
+	diplo_chance = {
+		base = 0
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	accept = {
+		if = {
+			limit = { scope:recipient = { any_loan = { owner ?= scope:actor } } }
+			add = {
+				desc = "MH_DIPLOREASON_IN_DEBT_TO_THEM"
+				value = 20
+			}
+		}
+		if = {
+			limit = { mh_family_ties = yes }
+			add = {
+				desc = "MH_DIPLOREASON_FAMILY_TIES"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 25 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 15
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_trade
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			giving_scripted_relation = {
+				type = relation_type:mh_corporate_charter
+				target = scope:actor
+			}
+		}
+		enabled = {
+			NOT = { has_variable = mh_right_build }
+		}
+	}
+
+	effect = {
+		scope:recipient = {
+			set_variable = mh_right_build
+			mh_change_control = { VALUE = 5 }
+		}
+		custom_tooltip = mh_petition_trading_rights_tt
+	}
+
+	ai_will_do = {
+		add = 20
+	}
+}
+
+mh_petition_levy_rights = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		custom_tooltip = {
+			text = mh_board_needs_25_tt
+			mh_actor_board_at_least = { VALUE = 25 }
+		}
+	}
+
+	diplo_chance = {
+		base = -15
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	accept = {
+		if = {
+			limit = { scope:recipient = { any_loan = { owner ?= scope:actor } } }
+			add = {
+				desc = "MH_DIPLOREASON_IN_DEBT_TO_THEM"
+				value = 20
+			}
+		}
+		if = {
+			limit = { mh_family_ties = yes }
+			add = {
+				desc = "MH_DIPLOREASON_FAMILY_TIES"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 25 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 15
+			}
+		}
+		if = {
+			limit = { scope:recipient = { at_war = yes } }
+			add = {
+				desc = "MH_DIPLOREASON_NEEDS_TROOPS"
+				value = 20
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_trade
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			giving_scripted_relation = {
+				type = relation_type:mh_corporate_charter
+				target = scope:actor
+			}
+		}
+		enabled = {
+			NOT = { has_variable = mh_right_levy }
+		}
+	}
+
+	effect = {
+		scope:recipient = {
+			set_variable = mh_right_levy
+			mh_change_control = { VALUE = 5 }
+		}
+		custom_tooltip = mh_petition_levy_rights_tt
+	}
+
+	ai_will_do = {
+		add = 10
+	}
+}
+
+mh_petition_tax_farming = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		custom_tooltip = {
+			text = mh_board_needs_25_tt
+			mh_actor_board_at_least = { VALUE = 25 }
+		}
+	}
+
+	diplo_chance = {
+		base = -25
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	accept = {
+		if = {
+			limit = { scope:recipient = { any_loan = { owner ?= scope:actor } } }
+			add = {
+				desc = "MH_DIPLOREASON_IN_DEBT_TO_THEM"
+				value = 30
+			}
+		}
+		if = {
+			limit = { mh_family_ties = yes }
+			add = {
+				desc = "MH_DIPLOREASON_FAMILY_TIES"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 25 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 15
+			}
+		}
+		if = {
+			limit = { scope:recipient = { gold < 0 } }
+			add = {
+				desc = "MH_DIPLOREASON_NEEDS_MONEY"
+				value = 25
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_trade
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			giving_scripted_relation = {
+				type = relation_type:mh_corporate_charter
+				target = scope:actor
+			}
+		}
+		enabled = {
+			NOT = { has_variable = mh_right_tax }
+		}
+	}
+
+	effect = {
+		scope:recipient = {
+			set_variable = mh_right_tax
+			add_country_modifier = {
+				modifier = mh_tax_farmed
+				days = -1
+				mode = replace
+			}
+			mh_change_control = { VALUE = 10 }
+		}
+		custom_tooltip = mh_petition_tax_farming_tt
+	}
+
+	ai_will_do = {
+		add = 15
+	}
+}
+
+# Land Grant: the host gives the company a share of its land (one location).
+# The company gets a Company Estate there, and can later take the land outright.
+mh_petition_land_grant = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		custom_tooltip = {
+			text = mh_board_needs_25_tt
+			mh_actor_board_at_least = { VALUE = 25 }
+		}
+	}
+
+	diplo_chance = {
+		base = -20
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	accept = {
+		if = {
+			limit = { scope:recipient = { any_loan = { owner ?= scope:actor } } }
+			add = {
+				desc = "MH_DIPLOREASON_IN_DEBT_TO_THEM"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_family_ties = yes }
+			add = {
+				desc = "MH_DIPLOREASON_FAMILY_TIES"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 25 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 15
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 50 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 15
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_trade
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			giving_scripted_relation = {
+				type = relation_type:mh_corporate_charter
+				target = scope:actor
+			}
+		}
+		enabled = {
+			custom_tooltip = {
+				text = mh_land_grant_cooldown_tt
+				NOT = { has_variable = mh_land_grant_cooldown }
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		interaction_source_list = {
+			scope:recipient = {
+				every_owned_location = {
+					limit = {
+						is_capital = no
+						NOT = { has_variable = mh_company_land }
+					}
+					add_to_list = source
+				}
+			}
+		}
+		target_flag = target
+		name = "mh_select_land_grant"
+		none_available_msg_key = "mh_no_locations"
+		column = {
+			data = name
+		}
+		visible = {
+			always = yes
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			custom_tooltip = mh_petition_land_grant_tt
+			hidden_effect = {
+				scope:target = {
+					set_variable = { name = mh_company_land value = scope:actor }
+					change_building_level_in_location = {
+						building = building_type:mh_company_estate
+						value = 1
+						owner = scope:actor
+					}
+				}
+				scope:recipient = {
+					set_variable = { name = mh_land_grant_cooldown value = yes years = 2 }
+					mh_change_control = { VALUE = 5 }
+				}
+			}
+		}
+		else = {
+			custom_tooltip = mh_select_land_grant
+		}
+	}
+
+	ai_will_do = {
+		add = 10
+	}
+}
+
+#######################################################
+# Declare Corporate Protectorate (control 50+)
+#######################################################
+mh_declare_protectorate = {
+	type = diplomacy
+	category = CATEGORY_INFLUENCE_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = {
+			at_war = no
+			is_subject = no
+			custom_tooltip = {
+				text = mh_must_be_landed_tt
+				country_type = location
+			}
+		}
+		custom_tooltip = {
+			text = mh_board_needs_50_tt
+			mh_actor_board_at_least = { VALUE = 50 }
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_influence
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+		}
+		enabled = {
+			is_subject = no
+			at_war = no
+			custom_tooltip = {
+				text = mh_control_needs_50_tt
+				has_variable = mh_control
+				var:mh_control >= 50
+			}
+		}
+	}
+
+	effect = {
+		scope:recipient = {
+			make_subject_of = {
+				target = scope:actor
+				type = subject_type:mh_corporate_protectorate
+			}
+		}
+		scope:actor = {
+			mh_change_board_confidence = { VALUE = -10 }
+		}
+	}
+
+	ai_will_do = {
+		add = 25
+	}
+}
+
+#######################################################
+# Absorb Host (control 100, or 75 with family ties)
+#######################################################
+mh_absorb_host = {
+	type = diplomacy
+	category = CATEGORY_INFLUENCE_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 12
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = { at_war = no }
+		custom_tooltip = {
+			text = mh_board_needs_60_tt
+			mh_actor_board_at_least = { VALUE = 60 }
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_influence
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+		}
+		enabled = {
+			at_war = no
+			custom_tooltip = {
+				text = mh_absorb_requirements_tt
+				has_variable = mh_control
+				OR = {
+					AND = {
+						var:mh_control >= 100
+						is_subject_of = scope:actor
+					}
+					AND = {
+						var:mh_control >= 75
+						ruler ?= {
+							has_dynasty = yes
+							scope:actor.ruler ?= {
+								has_dynasty = yes
+								dynasty = prev.dynasty
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	effect = {
+		custom_tooltip = mh_absorb_host_tt
+		hidden_effect = {
+			scope:recipient = { mh_prepare_absorption_effect = yes }
+			scope:actor = {
+				mh_change_board_confidence = { VALUE = -20 }
+				mh_make_landed_effect = yes
+				annex_country = { country = scope:recipient }
+			}
+		}
+	}
+
+	ai_will_do = {
+		add = 50
+	}
+}
+
+#######################################################
+# Foreclose on Land: a debtor pays off every loan it owes us with a location
+#######################################################
+mh_foreclose_land = {
+	type = diplomacy
+	category = CATEGORY_ECONOMY_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 24
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = { at_war = no }
+		custom_tooltip = {
+			text = mh_board_needs_30_tt
+			mh_actor_board_at_least = { VALUE = 30 }
+		}
+	}
+
+	diplo_chance = {
+		base = -20
+		opinion = 0.2
+		trust_in_actor = 0.2
+	}
+
+	accept = {
+		if = {
+			limit = {
+				scope:recipient = {
+					any_loan = {
+						owner ?= scope:actor
+						count >= 2
+					}
+				}
+			}
+			add = {
+				desc = "MH_DIPLOREASON_MANY_LOANS"
+				value = 20
+			}
+		}
+		if = {
+			limit = {
+				scope:recipient = {
+					any_loan = {
+						owner ?= scope:actor
+						count >= 4
+					}
+				}
+			}
+			add = {
+				desc = "MH_DIPLOREASON_MANY_LOANS"
+				value = 20
+			}
+		}
+		if = {
+			limit = { scope:recipient = { gold < 0 } }
+			add = {
+				desc = "MH_DIPLOREASON_NEEDS_MONEY"
+				value = 25
+			}
+		}
+		if = {
+			limit = { mh_actor_control_at_least = { VALUE = 50 } }
+			add = {
+				desc = "MH_DIPLOREASON_CORPORATE_CONTROL"
+				value = 20
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_loan
+		}
+		visible = {
+			any_loan = { owner ?= scope:actor }
+		}
+		enabled = {
+			at_war = no
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		interaction_source_list = {
+			scope:recipient = {
+				every_owned_location = {
+					limit = { is_capital = no }
+					add_to_list = source
+				}
+			}
+		}
+		target_flag = target
+		name = "mh_select_foreclosure"
+		none_available_msg_key = "mh_no_locations"
+		column = {
+			data = name
+		}
+		visible = {
+			always = yes
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			custom_tooltip = mh_foreclose_land_tt
+			hidden_effect = {
+				scope:recipient = {
+					every_loan = {
+						limit = { owner ?= scope:actor }
+						cancel_loan = this
+					}
+				}
+				scope:actor = {
+					mh_make_landed_effect = yes
+					mh_change_board_confidence = { VALUE = 5 }
+				}
+				scope:target = {
+					mh_take_location_effect = { CORP = scope:actor }
+				}
+			}
+		}
+		else = {
+			custom_tooltip = mh_select_foreclosure
+		}
+	}
+
+	ai_will_do = {
+		add = 5
+	}
+}
+
+#######################################################
+# Claim Company Land: take a Company Estate location outright (control 50+)
+#######################################################
+mh_claim_company_land = {
+	type = diplomacy
+	category = CATEGORY_INFLUENCE_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 24
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = { at_war = no }
+		custom_tooltip = {
+			text = mh_board_needs_40_tt
+			mh_actor_board_at_least = { VALUE = 40 }
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_influence
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			any_owned_location = {
+				has_variable = mh_company_land
+				var:mh_company_land = scope:actor
+			}
+		}
+		enabled = {
+			at_war = no
+			custom_tooltip = {
+				text = mh_control_needs_50_tt
+				has_variable = mh_control
+				var:mh_control >= 50
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		interaction_source_list = {
+			scope:recipient = {
+				every_owned_location = {
+					limit = {
+						is_capital = no
+						has_variable = mh_company_land
+						var:mh_company_land = scope:actor
+					}
+					add_to_list = source
+				}
+			}
+		}
+		target_flag = target
+		name = "mh_select_company_land"
+		none_available_msg_key = "mh_no_locations"
+		column = {
+			data = name
+		}
+		visible = {
+			always = yes
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			custom_tooltip = mh_claim_company_land_tt
+			hidden_effect = {
+				scope:actor = {
+					mh_make_landed_effect = yes
+					mh_change_board_confidence = { VALUE = -10 }
+				}
+				scope:target = {
+					mh_take_location_effect = { CORP = scope:actor }
+				}
+				scope:recipient = {
+					mh_change_control = { VALUE = -10 }
+				}
+			}
+		}
+		else = {
+			custom_tooltip = mh_select_company_land
+		}
+	}
+
+	ai_will_do = {
+		add = 10
+	}
+}
+
+#######################################################
+# Found a Presidency: land as an independent chartered company in South or
+# Southeast Asia, on a Company Estate location (control 25+)
+#######################################################
+mh_found_presidency = {
+	type = diplomacy
+	category = CATEGORY_INFLUENCE_ACTIONS
+	ai_tick = monthly
+	ai_tick_frequency = 24
+
+	potential = {
+		scope:actor = { mh_is_corporation = yes }
+	}
+
+	allow = {
+		scope:actor = { at_war = no }
+		custom_tooltip = {
+			text = mh_board_needs_40_tt
+			mh_actor_board_at_least = { VALUE = 40 }
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = country
+		target_flag = recipient
+		name = "choose_country"
+		default_sort = will
+		column = {
+			data = country_diplomacy_info_influence
+		}
+		visible = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = scope:actor
+			any_owned_location = {
+				mh_presidency_zone_location = yes
+				has_variable = mh_company_land
+				var:mh_company_land = scope:actor
+			}
+		}
+		enabled = {
+			at_war = no
+			custom_tooltip = {
+				text = mh_control_needs_25_tt
+				has_variable = mh_control
+				var:mh_control >= 25
+			}
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = location
+		interaction_source_list = {
+			scope:recipient = {
+				every_owned_location = {
+					limit = {
+						is_capital = no
+						mh_presidency_zone_location = yes
+						has_variable = mh_company_land
+						var:mh_company_land = scope:actor
+					}
+					add_to_list = source
+				}
+			}
+		}
+		target_flag = target
+		name = "mh_select_presidency"
+		none_available_msg_key = "mh_no_locations"
+		column = {
+			data = name
+		}
+		visible = {
+			always = yes
+		}
+	}
+
+	effect = {
+		if = {
+			limit = { exists = scope:target }
+			custom_tooltip = mh_found_presidency_tt
+			hidden_effect = {
+				scope:target = { save_scope_as = mh_presidency_location }
+				scope:actor = {
+					mh_make_landed_effect = yes
+					mh_change_board_confidence = { VALUE = -10 }
+				}
+				scope:target = {
+					mh_take_location_effect = { CORP = scope:actor }
+				}
+				scope:actor = {
+					mh_become_chartered_company_effect = yes
+				}
+				scope:recipient = {
+					mh_change_control = { VALUE = -5 }
+				}
+			}
+		}
+		else = {
+			custom_tooltip = mh_select_presidency
+		}
+	}
+
+	ai_will_do = {
+		add = 20
+	}
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Merchant Houses: Corporations & Chartered Companies",
+    "id": "simon_merchant_houses",
+    "version": "1.0.0",
+    "game_id": "eu5",
+    "supported_game_version": "1.4.*",
+    "short_description": "Banks, the Hansa and merchant republics can incorporate as a Corporation led by a Governor and a board of Directors. Win charters inside other countries, petition for rights, build up control, turn hosts into protectorates, absorb them, and land your company, including as an independent chartered company in India and the East Indies.",
+    "tags": [
+        "Gameplay",
+        "Diplomacy",
+        "Economy"
+    ],
+    "relationships": [],
+    "game_custom_data": {
+        "multiplayer_synchronized": true
+    }
+}

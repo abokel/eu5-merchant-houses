@@ -1,0 +1,446 @@
+# Merchant Houses - scripted effects
+#
+# Variables used:
+#  On a corporation:  mh_board_confidence (0-100), mh_last_gold, mh_no_confidence_cooldown,
+#                     mh_is_chartered_company, mh_was_merchant_republic, mh_was_hansa
+#  On a host country: mh_stake_holder (the corporation), mh_control (0-100),
+#                     mh_right_build, mh_right_levy, mh_right_tax, mh_land_grant_cooldown,
+#                     mh_revocation_cooldown
+#  On a location:     mh_company_land (the corporation that owns the estate there),
+#                     mh_presidency_seat
+
+#######################################################
+# Incorporation
+#######################################################
+
+# Country scope. Turns a bank, the Hansa or a merchant republic into a Corporation.
+mh_incorporate_effect = {
+	custom_tooltip = mh_incorporate_effect_tt
+	hidden_effect = {
+		if = {
+			limit = { has_reform = government_reform:merchant_republic }
+			set_variable = mh_was_merchant_republic
+			remove_reform = government_reform:merchant_republic
+		}
+		if = {
+			limit = { has_reform = government_reform:hanseatic_merchant_federation }
+			set_variable = mh_was_hansa
+			remove_reform = government_reform:hanseatic_merchant_federation
+		}
+		change_government_type = government_type:corporation
+		change_heir_selection = heir_selection:mh_board_election
+		if = {
+			limit = { has_variable = mh_was_merchant_republic }
+			add_reform = government_reform:mh_merchant_corporation
+		}
+		if = {
+			limit = { has_variable = mh_was_hansa }
+			add_reform = government_reform:mh_hanseatic_corporation
+		}
+		add_reform = government_reform:mh_family_firm
+		set_variable = { name = mh_board_confidence value = 60 }
+		set_variable = { name = mh_last_gold value = gold }
+		ruler_or_regent ?= {
+			if = {
+				limit = { has_dynasty = no }
+				found_dynasty = random
+			}
+		}
+	}
+}
+
+#######################################################
+# Board of Directors
+#######################################################
+
+# Country scope (corporation). Change board confidence by $VALUE$ and keep it within 0-100.
+mh_change_board_confidence = {
+	if = {
+		limit = { NOT = { has_variable = mh_board_confidence } }
+		set_variable = { name = mh_board_confidence value = 50 }
+	}
+	change_variable = { name = mh_board_confidence add = $VALUE$ }
+	clamp_variable = { name = mh_board_confidence max = 100 min = 0 }
+}
+
+# Country scope (corporation). Runs every month.
+mh_monthly_corporation_effect = {
+	if = {
+		limit = { NOT = { has_variable = mh_board_confidence } }
+		set_variable = { name = mh_board_confidence value = 50 }
+	}
+	if = {
+		limit = { NOT = { has_variable = mh_last_gold } }
+		set_variable = { name = mh_last_gold value = gold }
+	}
+
+	# Profits please the board, losses worry it
+	if = {
+		limit = { gold > var:mh_last_gold }
+		mh_change_board_confidence = { VALUE = 1 }
+	}
+	else_if = {
+		limit = { gold < var:mh_last_gold }
+		mh_change_board_confidence = { VALUE = -1 }
+	}
+	set_variable = { name = mh_last_gold value = gold }
+
+	# War and bankruptcy are bad for business
+	if = {
+		limit = { at_war = yes }
+		mh_change_board_confidence = { VALUE = -0.5 }
+	}
+	if = {
+		limit = { is_during_bankruptcy = yes }
+		mh_change_board_confidence = { VALUE = -3 }
+	}
+	# A professional board drifts back toward a steady middle
+	if = {
+		limit = {
+			has_reform = government_reform:mh_joint_stock_board
+			var:mh_board_confidence < 50
+		}
+		mh_change_board_confidence = { VALUE = 0.5 }
+	}
+
+	# Vote of no confidence
+	if = {
+		limit = {
+			var:mh_board_confidence < 15
+			NOT = { has_variable = mh_no_confidence_cooldown }
+			has_ruler = yes
+		}
+		set_variable = { name = mh_no_confidence_cooldown value = yes years = 5 }
+		trigger_event_non_silently = { id = mh_board.1 }
+	}
+}
+
+# Country scope (corporation). The board removes the Governor and puts the ablest
+# Director in charge. scope:mh_new_governor must be saved first.
+mh_board_replaces_governor_effect = {
+	if = {
+		limit = { exists = scope:mh_new_governor }
+		set_new_ruler = scope:mh_new_governor
+		set_variable = { name = mh_board_confidence value = 50 }
+	}
+}
+
+#######################################################
+# Charters, stakes and control
+#######################################################
+
+# Host scope. $CORP$ becomes the corporation holding the stake here.
+mh_set_stakeholder_effect = {
+	if = {
+		limit = {
+			OR = {
+				NOT = { has_variable = mh_stake_holder }
+				NOT = { var:mh_stake_holder = $CORP$ }
+			}
+		}
+		mh_clear_stake_effect = yes
+		set_variable = { name = mh_stake_holder value = $CORP$ }
+		set_variable = { name = mh_control value = 5 }
+	}
+}
+
+# Host scope. Change control by $VALUE$ and keep it within 0-100.
+mh_change_control = {
+	if = {
+		limit = { NOT = { has_variable = mh_control } }
+		set_variable = { name = mh_control value = 0 }
+	}
+	change_variable = { name = mh_control add = $VALUE$ }
+	clamp_variable = { name = mh_control max = 100 min = 0 }
+}
+
+# Run on both countries when a charter ends. Only does something on the host
+# whose stakeholder is $CORP$: it loses its granted rights and a chunk of control.
+mh_charter_lost_effect = {
+	if = {
+		limit = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = $CORP$
+		}
+		mh_change_control = { VALUE = -25 }
+		mh_remove_rights_effect = yes
+	}
+}
+
+# Host scope. Removes every right granted to the stakeholder.
+mh_remove_rights_effect = {
+	if = {
+		limit = { has_variable = mh_right_build }
+		remove_variable = mh_right_build
+	}
+	if = {
+		limit = { has_variable = mh_right_levy }
+		remove_variable = mh_right_levy
+	}
+	if = {
+		limit = { has_variable = mh_right_tax }
+		remove_variable = mh_right_tax
+	}
+	if = {
+		limit = { has_country_modifier = mh_tax_farmed }
+		remove_country_modifier = mh_tax_farmed
+	}
+}
+
+# Host scope. Ends the stake completely.
+mh_clear_stake_effect = {
+	mh_remove_rights_effect = yes
+	mh_remove_control_tiers_effect = yes
+	if = {
+		limit = { has_country_modifier = mh_corporate_dominance }
+		remove_country_modifier = mh_corporate_dominance
+	}
+	every_owned_location = {
+		limit = { has_variable = mh_company_land }
+		remove_variable = mh_company_land
+	}
+	if = {
+		limit = { has_variable = mh_stake_holder }
+		remove_variable = mh_stake_holder
+	}
+	if = {
+		limit = { has_variable = mh_control }
+		remove_variable = mh_control
+	}
+}
+
+# Host scope. Runs every month on every country that has a corporate stakeholder.
+mh_monthly_host_effect = {
+	save_temporary_scope_as = mh_host
+
+	# The stakeholder no longer exists, or is no longer a corporation
+	if = {
+		limit = {
+			OR = {
+				NOT = { country_exists = var:mh_stake_holder }
+				var:mh_stake_holder = { NOT = { mh_is_corporation = yes } }
+			}
+		}
+		mh_clear_stake_effect = yes
+	}
+	else = {
+		var:mh_stake_holder = { save_temporary_scope_as = mh_corp }
+
+		if = {
+			limit = {
+				giving_scripted_relation = {
+					type = relation_type:mh_corporate_charter
+					target = scope:mh_corp
+				}
+			}
+			# Growth while the charter lasts
+			mh_change_control = { VALUE = 0.4 }
+			if = {
+				limit = { has_variable = mh_right_build }
+				mh_change_control = { VALUE = 0.2 }
+			}
+			if = {
+				limit = { has_variable = mh_right_levy }
+				mh_change_control = { VALUE = 0.2 }
+			}
+			if = {
+				limit = { has_variable = mh_right_tax }
+				mh_change_control = { VALUE = 0.3 }
+			}
+			if = {
+				limit = { mh_host_owes_stakeholder = yes }
+				mh_change_control = { VALUE = 0.4 }
+			}
+			if = {
+				limit = { mh_host_family_ties = yes }
+				mh_change_control = { VALUE = 0.4 }
+				if = {
+					limit = { scope:mh_corp = { has_reform = government_reform:mh_family_firm } }
+					mh_change_control = { VALUE = 0.4 }
+				}
+			}
+			# Subjects of the company are already in its grip
+			if = {
+				limit = { is_subject_of = scope:mh_corp }
+				mh_change_control = { VALUE = 0.5 }
+			}
+
+			# Tax farming: the company collects a tenth of the host's tax and trade income
+			if = {
+				limit = { has_variable = mh_right_tax }
+				scope:mh_corp = {
+					add_gold = {
+						value = scope:mh_host.monthly_income_trade_and_tax
+						multiply = 0.1
+					}
+				}
+			}
+
+			# An AI host that feels the company is getting too strong may revoke the charter
+			if = {
+				limit = {
+					is_ai = yes
+					var:mh_control >= 60
+					NOT = { is_subject_of = scope:mh_corp }
+					NOT = { has_variable = mh_revocation_cooldown }
+				}
+				random_list = {
+					97 = {}
+					3 = {
+						set_variable = { name = mh_revocation_cooldown value = yes years = 5 }
+						trigger_event_non_silently = { id = mh_board.10 }
+					}
+				}
+			}
+		}
+		else = {
+			# No charter: the company's grip fades
+			if = {
+				limit = { NOT = { is_subject_of = scope:mh_corp } }
+				mh_change_control = { VALUE = -1 }
+			}
+		}
+
+		mh_update_control_tier_effect = yes
+
+		# Nationalist backlash while the company dominates
+		if = {
+			limit = { var:mh_control >= 50 }
+			add_country_modifier = {
+				modifier = mh_corporate_dominance
+				days = 40
+				mode = replace
+			}
+		}
+
+		if = {
+			limit = {
+				var:mh_control <= 0
+				NOT = {
+					giving_scripted_relation = {
+						type = relation_type:mh_corporate_charter
+						target = scope:mh_corp
+					}
+				}
+			}
+			mh_clear_stake_effect = yes
+		}
+	}
+}
+
+
+# Host scope. Shows the current control tier as a country modifier.
+mh_update_control_tier_effect = {
+	if = {
+		limit = { var:mh_control >= 75 }
+		mh_set_control_tier = { TIER = mh_stake_dominion }
+	}
+	else_if = {
+		limit = { var:mh_control >= 50 }
+		mh_set_control_tier = { TIER = mh_stake_grip }
+	}
+	else_if = {
+		limit = { var:mh_control >= 25 }
+		mh_set_control_tier = { TIER = mh_stake_influence }
+	}
+	else = {
+		mh_set_control_tier = { TIER = mh_stake_concession }
+	}
+}
+
+# Host scope. Removes the other tier modifiers and applies $TIER$.
+mh_set_control_tier = {
+	mh_remove_control_tiers_effect = yes
+	add_country_modifier = {
+		modifier = $TIER$
+		days = 40
+		mode = replace
+	}
+}
+
+# Host scope. Removes every control tier modifier.
+mh_remove_control_tiers_effect = {
+	if = {
+		limit = { has_country_modifier = mh_stake_concession }
+		remove_country_modifier = mh_stake_concession
+	}
+	if = {
+		limit = { has_country_modifier = mh_stake_influence }
+		remove_country_modifier = mh_stake_influence
+	}
+	if = {
+		limit = { has_country_modifier = mh_stake_grip }
+		remove_country_modifier = mh_stake_grip
+	}
+	if = {
+		limit = { has_country_modifier = mh_stake_dominion }
+		remove_country_modifier = mh_stake_dominion
+	}
+}
+
+#######################################################
+# Landing
+#######################################################
+
+# Country scope (corporation). If this is still a building-based (landless) country,
+# turn it into a normal landed country. Call right before giving it its first land,
+# in the same effect, like the vanilla Japanese clan conversion does.
+mh_make_landed_effect = {
+	if = {
+		limit = { country_type = building }
+		change_country_type = location
+	}
+}
+
+# Location scope. Hands this location to $CORP$: removes the company estate building,
+# then transfers ownership and makes it a core.
+mh_take_location_effect = {
+	every_foreign_buildings_in_location = {
+		limit = {
+			owner = $CORP$
+			building_type = building_type:mh_company_estate
+		}
+		save_temporary_scope_as = mh_estate_building
+		location = { destroy_building = scope:mh_estate_building }
+	}
+	if = {
+		limit = { has_variable = mh_company_land }
+		remove_variable = mh_company_land
+	}
+	change_location_owner = $CORP$
+	add_core = $CORP$
+	change_integration_level = core
+}
+
+# Country scope (corporation). Marks it as a chartered company and gives it the
+# reform, the Presidency seat in scope:mh_presidency_location and a headquarters there.
+mh_become_chartered_company_effect = {
+	if = {
+		limit = { NOT = { has_variable = mh_is_chartered_company } }
+		set_variable = mh_is_chartered_company
+		add_reform = government_reform:mh_chartered_company
+	}
+	if = {
+		limit = {
+			exists = scope:mh_presidency_location
+			NOT = { any_owned_location = { has_building = building_type:mh_presidency_headquarters } }
+		}
+		save_temporary_scope_as = mh_hq_owner
+		scope:mh_presidency_location = {
+			set_variable = mh_presidency_seat
+			if = {
+				limit = { owner ?= scope:mh_hq_owner }
+				change_building_level_in_location = {
+					building = building_type:mh_presidency_headquarters
+					value = 1
+					owner = scope:mh_hq_owner
+				}
+			}
+		}
+	}
+}
+
+# Host scope (to be absorbed by $CORP$). Clears the stake before annexation.
+mh_prepare_absorption_effect = {
+	mh_clear_stake_effect = yes
+}

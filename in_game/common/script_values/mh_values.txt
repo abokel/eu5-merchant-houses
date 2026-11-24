@@ -1,0 +1,54 @@
+# Merchant Houses - script values (country scope), used to show numbers in text
+
+# The corporation's board confidence (0-100)
+mh_board_confidence_value = {
+	value = 0
+	if = {
+		limit = { has_variable = mh_board_confidence }
+		value = var:mh_board_confidence
+	}
+}
+
+# How many countries this corporation holds the stake in
+mh_num_stakes_value = {
+	value = 0
+	every_country = {
+		limit = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = root
+		}
+		add = 1
+	}
+}
+
+# How many hosts this corporation controls at 50 or more
+mh_num_strong_stakes_value = {
+	value = 0
+	every_country = {
+		limit = {
+			has_variable = mh_stake_holder
+			var:mh_stake_holder = root
+			has_variable = mh_control
+			var:mh_control >= 50
+		}
+		add = 1
+	}
+}
+
+# How many Corporate Protectorates this corporation has
+mh_num_protectorates_value = {
+	value = 0
+	every_subject = {
+		limit = { is_subject_type = mh_corporate_protectorate }
+		add = 1
+	}
+}
+
+# A host's control by its corporation (0-100)
+mh_control_value = {
+	value = 0
+	if = {
+		limit = { has_variable = mh_control }
+		value = var:mh_control
+	}
+}
