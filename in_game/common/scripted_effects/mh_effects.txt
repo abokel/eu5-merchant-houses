@@ -5,7 +5,7 @@
 #                     mh_is_chartered_company, mh_was_merchant_republic, mh_was_hansa
 #  On a host country: mh_stake_holder (the corporation), mh_control (0-100),
 #                     mh_right_build, mh_right_levy, mh_right_tax, mh_land_grant_cooldown,
-#                     mh_revocation_cooldown
+#                     mh_revocation_cooldown, mh_charter_enforced (10 years after Restore Charter)
 #  On a location:     mh_company_land (the corporation that owns the estate there),
 #                     mh_presidency_seat
 
@@ -234,6 +234,8 @@ mh_restore_charter_effect = {
 		}
 		mh_set_stakeholder_effect = { CORP = scope:mh_charter_winner }
 		mh_change_control = { VALUE = 25 }
+		# They cannot revoke the restored charter for 10 years
+		set_variable = { name = mh_charter_enforced value = yes years = 10 }
 	}
 	mh_change_board_confidence = { VALUE = 10 }
 }
@@ -354,6 +356,7 @@ mh_monthly_host_effect = {
 					var:mh_control >= 60
 					NOT = { is_subject_of = scope:mh_corp }
 					NOT = { has_variable = mh_revocation_cooldown }
+					NOT = { has_variable = mh_charter_enforced }
 				}
 				random_list = {
 					97 = {}

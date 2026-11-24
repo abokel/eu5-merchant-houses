@@ -88,6 +88,7 @@
  break_mh_corporate_charter_CATEGORY: "CATEGORY_ECONOMY_ACTIONS"
  break_mh_corporate_charter_desc: "Give up our charter in their country. We lose every right they granted us and a large part of our control over them."
  mh_subject_cannot_revoke_tt: "We are not a subject of the company"
+ mh_charter_enforced_tt: "The company did not force this charter on us in a peace deal in the last 10 years"
  mh_host_has_other_stakeholder_tt: "Another company already holds the corporate stake in this country"
 
  MH_DIPLOREASON_IN_DEBT_TO_THEM: "In debt to them"
@@ -214,7 +215,7 @@
  mh_restore_charter: "Restore Charter"
  mh_restore_charter_entry: "[TARGET_COUNTRY.GetNameWithFlag] restores our Corporate Charter"
  mh_restore_charter_entry_short: "[TARGET_COUNTRY.GetNameWithFlagWithNoTooltip] restores our charter"
- mh_restore_charter_desc: "They grant our Corporate Charter again. Our control over them rises by 25 and board confidence by 10. Cheaper in an Enforce Charter war."
+ mh_restore_charter_desc: "They grant our Corporate Charter again. Our control over them rises by 25 and board confidence by 10, and they cannot revoke it for 10 years. Cheaper in an Enforce Charter war."
  mh_demand_company_rights: "Demand Company Rights"
  mh_demand_company_rights_entry: "[TARGET_COUNTRY.GetNameWithFlag] grants us Trading Rights, Levy Rights and Tax Farming"
  mh_demand_company_rights_entry_short: "[TARGET_COUNTRY.GetNameWithFlagWithNoTooltip] grants company rights"

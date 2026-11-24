@@ -83,6 +83,10 @@ mh_corporate_charter = {
 			text = mh_subject_cannot_revoke_tt
 			NOT = { scope:actor = { is_subject_of = scope:recipient } }
 		}
+		custom_tooltip = {
+			text = mh_charter_enforced_tt
+			NOT = { scope:actor = { has_variable = mh_charter_enforced } }
+		}
 	}
 
 	request_effect = {

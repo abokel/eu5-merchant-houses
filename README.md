@@ -39,7 +39,7 @@ Separate from, and compatible with, Colonial Mandates & Landed Trade Companies (
 - **Extend Credit**: lend a country six months of its income (at most half your treasury) for 60 months. Control +3 if you hold its stake.
 - The host can revoke the charter at any time, unless it is your subject: you lose every right and 25 control. AI hosts at 60+ control may do it on their own.
 - A host that revokes gives you the **Enforce Charter** casus belli for 10 years.
-- Peace terms in any war you win against a landed country: **Restore Charter** (charter back, +25 control, +10 board confidence; 25 war score, 10 with Enforce Charter) and **Demand Company Rights** (Trading Rights, Levy Rights and Tax Farming, +10 control; 20 war score, 10 with Enforce Charter).
+- Peace terms in any war you win against a landed country: **Restore Charter** (charter back, +25 control, +10 board confidence, and they cannot revoke it for 10 years; 25 war score, 10 with Enforce Charter) and **Demand Company Rights** (Trading Rights, Levy Rights and Tax Farming, +10 control; 20 war score, 10 with Enforce Charter).
 - Petition, protectorate, absorb and land actions show your exact current control over the host in their tooltip.
 
 ### Protectorates and absorption
