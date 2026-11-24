@@ -83,10 +83,11 @@
  offer_mh_corporate_charter_desc: "Let their company operate inside our borders."
  cancel_mh_corporate_charter: "Revoke Corporate Charter"
  cancel_mh_corporate_charter_CATEGORY: "CATEGORY_ECONOMY_ACTIONS"
- cancel_mh_corporate_charter_desc: "Throw the company out. They lose every right we granted them and a large part of their control over us, and they gain a casus belli to force us to restore the charter."
+ cancel_mh_corporate_charter_desc: "Throw the company out. They lose every right we granted them and a large part of their control over us, and they gain a casus belli to force us to restore the charter. A subject of the company cannot do this."
  break_mh_corporate_charter: "Give Up Corporate Charter"
  break_mh_corporate_charter_CATEGORY: "CATEGORY_ECONOMY_ACTIONS"
  break_mh_corporate_charter_desc: "Give up our charter in their country. We lose every right they granted us and a large part of our control over them."
+ mh_subject_cannot_revoke_tt: "We are not a subject of the company"
  mh_host_has_other_stakeholder_tt: "Another company already holds the corporate stake in this country"
 
  MH_DIPLOREASON_IN_DEBT_TO_THEM: "In debt to them"

@@ -74,8 +74,16 @@ mh_corporate_charter = {
 		}
 	}
 
-	# The host may revoke the charter at any time (that is a cancel on their side)
+	# The host may revoke the charter (a cancel on their side), unless it is a subject
+	# of the corporation. scope:actor is the country cancelling.
 	cancel_visible = { always = yes }
+
+	cancel_enabled = {
+		custom_tooltip = {
+			text = mh_subject_cannot_revoke_tt
+			NOT = { scope:actor = { is_subject_of = scope:recipient } }
+		}
+	}
 
 	request_effect = {
 		scope:recipient = {
